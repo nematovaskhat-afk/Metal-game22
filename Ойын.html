@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивті сабақ: Металдардың қышқылдармен әрекеттесуі</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .beaker {
+            position: relative;
+            width: 250px; 
+            height: 300px; 
+            border: 5px solid #4a5568;
+            border-top: none;
+            border-radius: 0 0 25px 25px; 
+            margin: 0 auto;
+        }
+        .acid {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background-color: #63b3ed;
+            opacity: 0.6;
+            border-radius: 0 0 20px 20px;
+        }
+        .beaker-top {
+            position: relative;
+            width: 270px; 
+            height: 25px; 
+            border: 5px solid #4a5568;
+            border-bottom: none;
+            border-radius: 12px 12px 0 0; 
+            left: -10px;
+            background-color: #edf2f7;
+        }
+        .bubble {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.7);
+            width: 15px; 
+            height: 15px; 
+            border-radius: 50%;
+            bottom: 20px;
+            animation: rise 2s infinite ease-in;
+            opacity: 0;
+        }
+        @keyframes rise {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-230px) scale(2); 
+                opacity: 0;
+            }
+        }
+        .metal-piece {
+            position: absolute;
+            width: 40px; 
+            height: 50px; 
+            background-color: #a0aec0;
+            border-radius: 5px;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: top 1s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.1rem; 
+            color: #2d3748;
+        }
+        /* Ойынға арналған стильдер */
+        .game-item {
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .game-item:hover {
+            transform: scale(1.05);
+        }
+        .selected {
+            background-color: #4299e1;
+            color: white;
+            border-color: #2b6cb0;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        /* Жаңа стильдер (теңдеу үшін) */
+        #reaction-equation {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2d3748;
+            min-height: 3rem; /* Биіктікті тұрақтандыру */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #reaction-explanation {
+            font-size: 1rem;
+            color: #4a5568;
+            min-height: 4.5rem; /* Биіктікті тұрақтандыру */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Металдардың қышқыл ерітінділермен әрекеттесуі</h1>
+            <p class="text-lg text-gray-600 mt-2">8-сыныпқа арналған интерактивті сабақ</p>
+        </header>
+
+        <!-- 1-бөлім: Интерактивті тәжірибе -->
+        <section class="bg-white p-6 rounded-2xl shadow-lg mb-10">
+            <h2 class="text-2xl font-bold mb-4 text-center">1. Анимациялық тәжірибе</h2>
+            <p class="text-center text-gray-600 mb-6">Тәжірибе жасау үшін металды таңдап, оны тұз қышқылы (HCl) құйылған стақанға салыңыз. Металдың белсенділігіне байланысты реакцияның қалай өзгеретінін бақылаңыз.</p>
+            
+            <div class="flex justify-center items-center space-x-2 md:space-x-4 mb-8 flex-wrap">
+                <!-- Металл таңдау батырмалары -->
+                <button onclick="runExperiment('Na')" class="bg-red-300 hover:bg-red-400 text-gray-800 font-bold py-2 px-4 rounded-lg m-1" aria-label="Натриймен тәжірибе">Натрий (Na)</button>
+                <button onclick="runExperiment('Ca')" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg m-1" aria-label="Кальциймен тәжірибе">Кальций (Ca)</button>
+                <button onclick="runExperiment('Al')" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg m-1" aria-label="Алюминиймен тәжірибе">Алюминий (Al)</button>
+                <button onclick="runExperiment('Sn')" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg m-1" aria-label="Қалайымен тәжірибе">Қалайы (Sn)</button>
+                <button onclick="runExperiment('Ag')" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg m-1" aria-label="Күміспен тәжірибе">Күміс (Ag)</button>
+            </div>
+
+            <div class="flex flex-col items-center justify-center">
+                <!-- Стақан анимациясы -->
+                <div class="mb-6 md:mb-0">
+                    <div id="experiment-area" class="relative">
+                        <div class="beaker-top"></div>
+                        <div class="beaker">
+                            <div class="acid"></div>
+                            <div id="bubbles-container"></div>
+                            <div id="metal-in-beaker"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ЖАҢА БЛОК: Реакция теңдеуі және түсініктеме -->
+                <div id="reaction-equation-container" class="mt-8 w-full max-w-lg text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <h3 class="text-lg font-semibold mb-2">Реакция теңдеуі және түсініктеме</h3>
+                    <div id="reaction-equation" class="p-2 bg-gray-200 rounded-md">
+                        Металды таңдаңыз...
+                    </div>
+                    <p id="reaction-explanation" class="mt-4 text-left p-2">
+                        Тәжірибені бастау үшін жоғарыдағы металл батырмаларының бірін басыңыз.
+                    </p>
+                </div>
+                <!-- Жаңа блоктың соңы -->
+
+            </div>
+        </section>
+
+        <!-- 2-бөлім: Интерактивті ойын -->
+        <section class="bg-white p-6 rounded-2xl shadow-lg">
+            <h2 class="text-2xl font-bold mb-4 text-center">2. Ойын: Металдардың белсенділік қатары</h2>
+            <p class="text-center text-gray-600 mb-6">Берілген металдарды белсенділігінің кему реті бойынша дұрыс таңдаңыз.</p>
+            
+            <div id="game-options" class="flex justify-center items-center space-x-4 mb-4 flex-wrap">
+                <!-- Ойын батырмалары JS арқылы қосылады -->
+            </div>
+
+            <div class="text-center mb-4">
+                <h3 class="text-lg font-semibold">Сіздің таңдауыңыз:</h3>
+                <div id="user-answer" class="mt-2 p-4 bg-gray-200 rounded-lg min-h-[50px] text-xl font-bold flex justify-center items-center space-x-4">
+                    <!-- Таңдалған металдар осында көрсетіледі -->
+                </div>
+            </div>
+
+            <div class="flex justify-center items-center space-x-4 mt-6">
+                <button onclick="checkAnswer()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg">Тексеру</button>
+                <button onclick="resetGame()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg">Қайталау</button>
+            </div>
+
+            <div id="game-feedback" class="mt-6 text-center text-2xl font-semibold"></div>
+        </section>
+        
+         <footer class="text-center mt-10 text-gray-500">
+            <p>&copy; 2025 Интерактивті химия сабағы</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- 1-бөлім: Интерактивті тәжірибе скрипті (ЖАҢАРТЫЛДЫ) ---
+        
+        // Металл деректері мен теңдеулері
+        const metals = {
+            'Na': { 
+                name: 'Натрий', 
+                reactivity: 100,
+                equation: '2Na + 2HCl &rarr; 2NaCl + H<sub>2</sub>&uarr;',
+                explanation: 'Натрий - өте белсенді сілтілік металл. Ол қышқылмен өте қарқынды, жарылыспен әрекеттеседі.'
+            },
+            'Ca': { 
+                name: 'Кальций', 
+                reactivity: 80,
+                equation: 'Ca + 2HCl &rarr; CaCl<sub>2</sub> + H<sub>2</sub>&uarr;',
+                explanation: 'Кальций - белсенді сілтілік-жер металл. Ол қышқылмен белсенді түрде сутегін бөле әрекеттеседі.'
+            },
+            'Al': { 
+                name: 'Алюминий', 
+                reactivity: 50,
+                equation: '2Al + 6HCl &rarr; 2AlCl<sub>3</sub> + 3H<sub>2</sub>&uarr;',
+                explanation: 'Алюминий - белсенді металл. Оның бетін қорғап тұрған оксидті қабықша (Al₂O₃) алынғаннан кейін ғана реакция басталады.'
+            },
+            'Sn': { 
+                name: 'Қалайы', 
+                reactivity: 20,
+                equation: 'Sn + 2HCl &rarr; SnCl<sub>2</sub> + H<sub>2</sub>&uarr;',
+                explanation: 'Қалайы - белсенділігі орташа металл (сутектен сәл бұрын тұр). Реакция баяу жүреді, әсіресе қыздырғанда жылдамдайды.'
+            },
+            'Ag': { 
+                name: 'Күміс', 
+                reactivity: 0,
+                equation: 'Ag + HCl &rarr; Реакция жүрмейді',
+                explanation: 'Күміс - белсенділігі төмен (пассивті) металл. Ол белсенділік қатарында сутектен *кейін* орналасқан, сондықтан тұз қышқылымен әрекеттеспейді.'
+            }
+        };
+
+        const bubblesContainer = document.getElementById('bubbles-container');
+        const metalInBeakerDiv = document.getElementById('metal-in-beaker');
+        // Жаңа элементтер
+        const equationDiv = document.getElementById('reaction-equation');
+        const explanationDiv = document.getElementById('reaction-explanation');
+
+        let bubbleInterval;
+
+        function runExperiment(metalSymbol) {
+            // Анимацияны тазарту
+            clearInterval(bubbleInterval);
+            bubblesContainer.innerHTML = '';
+            metalInBeakerDiv.innerHTML = '';
+            
+            const metalData = metals[metalSymbol];
+            
+            // ЖАҢА: Теңдеу мен түсініктемені көрсету
+            equationDiv.innerHTML = metalData.equation;
+            explanationDiv.textContent = metalData.explanation;
+
+            // Металл бөлшегін стақанға салу анимациясы
+            const metalPiece = document.createElement('div');
+            metalPiece.className = 'metal-piece';
+            metalPiece.textContent = metalSymbol;
+            metalInBeakerDiv.appendChild(metalPiece);
+            
+            setTimeout(() => {
+                metalPiece.style.top = '200px';
+            }, 100);
+
+            // Көпіршіктер анимациясы (егер белсенді болса)
+            if (metalData.reactivity > 0) {
+                setTimeout(() => {
+                    bubbleInterval = setInterval(() => {
+                        createBubble(metalData.reactivity);
+                    }, 2500 / (metalData.reactivity / 10 + 1)); // 0-ге бөлуді болдырмау
+                }, 1100); // Металл суға "түскеннен" кейін
+            }
+        }
+
+        function createBubble(reactivity) {
+            const bubbleCount = Math.floor(reactivity / 8); // Көпіршіктер санын арттыру
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.style.left = `${Math.random() * 85 + 5}%`; 
+                bubble.style.animationDelay = `${Math.random() * 2}s`;
+                bubble.style.animationDuration = `${5 - (reactivity / 25)}s`; // Белсендірек болса, жылдамырақ
+                bubblesContainer.appendChild(bubble);
+                
+                setTimeout(() => {
+                    bubble.remove();
+                }, 5000); // Анимация аяқталғанда жою
+            }
+        }
+
+        // --- 2-бөлім: Интерактивті ойын скрипті ---
+        const gameOptionsDiv = document.getElementById('game-options');
+        const userAnswerDiv = document.getElementById('user-answer');
+        const gameFeedbackDiv = document.getElementById('game-feedback');
+        
+        const correctAnswer = ['Na', 'Ca', 'Al', 'Sn', 'Ag'];
+        let gameMetals = [...correctAnswer];
+        let userAnswer = [];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        function selectMetal(metalSymbol, buttonElement) {
+            if (buttonElement.classList.contains('selected') || userAnswer.length >= correctAnswer.length) return; 
+            
+            userAnswer.push(metalSymbol);
+            buttonElement.classList.add('selected');
+            
+            updateUserAnswer();
+        }
+        
+        function updateUserAnswer() {
+            userAnswerDiv.innerHTML = '';
+             userAnswer.forEach((metal, index) => {
+                const metalSpan = document.createElement('span');
+                metalSpan.textContent = metal;
+                userAnswerDiv.appendChild(metalSpan);
+                if (index < userAnswer.length - 1) {
+                    const arrowSpan = document.createElement('span');
+                    arrowSpan.textContent = '→';
+                    arrowSpan.className = 'mx-2 text-gray-500';
+                    userAnswerDiv.appendChild(arrowSpan);
+                }
+            });
+        }
+        
+        function renderGame() {
+            shuffleArray(gameMetals);
+            gameOptionsDiv.innerHTML = '';
+            gameMetals.forEach(metal => {
+                const button = document.createElement('button');
+                button.textContent = metal;
+                // Натрийді ерекшелеу үшін
+                if(metal === 'Na') {
+                     button.className = 'game-item border-2 border-red-400 bg-red-200 font-bold text-xl py-4 px-6 rounded-lg m-2';
+                } else {
+                     button.className = 'game-item border-2 border-gray-400 bg-gray-200 font-bold text-xl py-4 px-6 rounded-lg m-2';
+                }
+                button.onclick = () => selectMetal(metal, button);
+                gameOptionsDiv.appendChild(button);
+            });
+        }
+
+        function checkAnswer() {
+            if (userAnswer.length !== correctAnswer.length) {
+                gameFeedbackDiv.textContent = 'Барлық металды таңдаңыз!';
+                gameFeedbackDiv.className = 'mt-6 text-center text-2xl font-semibold text-yellow-600';
+                return;
+            }
+
+            const isCorrect = JSON.stringify(userAnswer) === JSON.stringify(correctAnswer);
+
+            if (isCorrect) {
+                gameFeedbackDiv.textContent = 'Құттықтаймын! Жауап дұрыс!';
+                gameFeedbackDiv.className = 'mt-6 text-center text-2xl font-semibold text-green-600';
+            } else {
+                gameFeedbackDiv.textContent = 'Қате! Қайталап көріңіз.';
+                gameFeedbackDiv.className = 'mt-6 text-center text-2xl font-semibold text-red-600';
+            }
+        }
+
+        function resetGame() {
+            userAnswer = [];
+            gameFeedbackDiv.textContent = '';
+            userAnswerDiv.innerHTML = '';
+            renderGame();
+        }
+
+        // Ойынды бірінші рет жүктеу
+        document.addEventListener('DOMContentLoaded', resetGame);
+    </script>
+</body>
+</html>
